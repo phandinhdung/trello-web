@@ -1,1 +1,3 @@
-bộ code base được khởi tạo từ trungquandev
+Tạo Website Trello
+
+Phan Đình Dũng

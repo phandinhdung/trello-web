@@ -32,7 +32,7 @@ function Profiles() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar sx={{ width: 30, height: 30 }} alt="Dũng Avatar" src="https://avatars.githubusercontent.com/u/195135390?v=4" />
+          <Avatar sx={{ width: 36, height: 36 }} alt="Dũng Avatar" src="https://avatars.githubusercontent.com/u/195135390?v=4" />
         </IconButton>
       </Tooltip>
       <Menu
