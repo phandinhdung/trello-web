@@ -1,3 +1,1 @@
-Tạo Website Trello
-
-Phan Đình Dũng
+Tạo Website Trello theo khóa học thực chiến của TrungQuanDev.
