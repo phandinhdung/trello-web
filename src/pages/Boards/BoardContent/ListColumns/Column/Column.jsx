@@ -42,6 +42,22 @@ function Column({ column }) {
   //end code cho drop down menu
 
   const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id') // mảng đã sắp xếp
+
+  const [openNewCardForm, setOpenNewCardForm] = useState(false);
+  const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm);
+
+  const [newCardTitle, setNewCardTitle] = useState('');
+  const addNewCard = () => {
+    if (!newCardTitle) {
+      console.error('Please enter Card title!')
+      return;
+    }
+    console.log(newCardTitle);
+
+    toggleOpenNewCardForm();
+    setNewCardTitle('');
+  }
+
   return (
     <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes} >
       < Box {...listeners}
@@ -129,15 +145,40 @@ function Column({ column }) {
         {/* Box column Footer */}
         < Box sx={{
           height: (theme) => theme.trello.columnFooterHeight,
-          P: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          P: 2
+          // ,display: 'flex',
+          // alignItems: 'center',
+          // justifyContent: 'space-between'
         }}>
-          <Button startIcon={<AddCardIcon />}>Add new card</Button>
-          <Tooltip title="Drag to move">
-            <DragHandleIcon sx={{ cursor: 'pointer' }} />
-          </Tooltip>
+          {
+            !openNewCardForm
+              ?
+              <Box
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <Button startIcon={<AddCardIcon />} onClick={toggleOpenNewCardForm}>Add new card</Button>
+                <Tooltip title="Drag to move">
+                  <DragHandleIcon sx={{ cursor: 'pointer' }} />
+                </Tooltip>
+              </Box>
+              :
+              <Box
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}
+              >
+                form add card
+              </Box>
+          }
+
         </Box >
       </Box >
     </div>

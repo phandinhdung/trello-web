@@ -20,7 +20,8 @@ import {
   closestCenter
 } from '@dnd-kit/core'
 
-import { cloneDeep, intersection } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
+import { generatePlaceholderCard } from '~/utils/formatters'
 import Column from './ListColumns/Column/Column'
 import Card from './ListColumns/Column/ListCards/Card/Card'
 
@@ -93,6 +94,11 @@ function BoardContent({ board }) {
 
       if (nextActiveColumn) {
         nextActiveColumn.cards = nextActiveColumn.cards.filter(card => card._id !== activeDraggingCardId);
+
+        if (isEmpty(nextActiveColumn.cards)) {
+          nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)]
+        }
+
         nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(card => card._id);
       }
 
@@ -107,6 +113,8 @@ function BoardContent({ board }) {
         console.log('rebuild_activeDraggingCardData', rebuild_activeDraggingCardData)
 
         nextOverColumn.cards = nextOverColumn.cards.toSpliced(newCardIndex, 0, rebuild_activeDraggingCardData);
+
+        nextOverColumn.cards = nextOverColumn.cards.filter(card => !card.FE_PlaceholderCard)
 
         nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id);
       }
@@ -228,7 +236,7 @@ function BoardContent({ board }) {
       return closestCorners({ ...args });
     // First, let's see if there are any collisions with the pointer
     const pointerIntersections = pointerWithin(args);
-    if(!pointerIntersections?.length) return;
+    if (!pointerIntersections?.length) return;
 
     //const intersections = !!pointerIntersections?.length ? pointerIntersections : rectIntersection(args);
     let overId = getFirstCollision(pointerIntersections, 'id');
