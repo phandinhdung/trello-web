@@ -1,4 +1,4 @@
-Tạo Website Trello theo khóa học thực chiến của TrungQuanDev.
+Tạo Website Trello theo khóa học thực chiến font-end.
 
 Requirements - Thông tin của bộ Code Base này - Chuẩn các phiên bản dưới đây để bắt đầu học: (Semantic Versioning)
 * nodejs >= 18.16.0
