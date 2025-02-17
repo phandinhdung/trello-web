@@ -20,8 +20,11 @@ import ListCards from './ListCards/ListCards'
 import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import TextField from '@mui/material/TextField'
+import CloseIcon from '@mui/icons-material/Close'
+import { toast } from 'react-toastify'
 
-function Column({ column }) {
+function Column({ column, createNewCard }) {
   //start code cho keo tha
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: column._id, data: { ...column } });
   const dndKitColumnStyles = {
@@ -47,12 +50,18 @@ function Column({ column }) {
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm);
 
   const [newCardTitle, setNewCardTitle] = useState('');
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle) {
-      console.error('Please enter Card title!')
+      toast.error('Please enter Card title!')
       return;
     }
-    console.log(newCardTitle);
+
+    const newCardData = {
+      title: newCardTitle,
+      columnId: column._id
+    }
+
+    await createNewCard(newCardData);
 
     toggleOpenNewCardForm();
     setNewCardTitle('');
@@ -145,7 +154,7 @@ function Column({ column }) {
         {/* Box column Footer */}
         < Box sx={{
           height: (theme) => theme.trello.columnFooterHeight,
-          P: 2
+          p: 2
           // ,display: 'flex',
           // alignItems: 'center',
           // justifyContent: 'space-between'
@@ -175,7 +184,55 @@ function Column({ column }) {
                   gap: 1
                 }}
               >
-                form add card
+                <TextField
+                  label="Enter Column title ..."
+                  type="text"
+                  size="small"
+                  variant="outlined"
+                  autoFocus
+                  data-no-dnd="true"
+                  value={newCardTitle}
+                  onChange={(e) => setNewCardTitle(e.target.value)}
+
+                  sx={{
+                    '& label': { color: 'text.primary' },
+                    '& input': {
+                      color: (theme) => theme.palette.primary.main,
+                      bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#333643' : 'white')
+                    },
+                    '& lable.Mui-focused': { color: (theme) => theme.palette.primary.main },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { borderColor: (theme) => theme.palette.primary.main },
+                      '&:hover fieldset': { borderColor: (theme) => theme.palette.primary.main },
+                      '&.Mui-focused fieldset': { borderColor: (theme) => theme.palette.primary.main }
+                    },
+                    '& .MuiOutlinedInput-input': {
+                      borderRadius: 1
+                    }
+                  }}
+                />
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button
+                    onClick={addNewCard}
+                    variant="contained" color='success' size="small"
+                    sx={{
+                      boxShadow: 'none',
+                      border: '0.5px solid',
+                      borderColor: (theme) => theme.palette.success.main,
+                      '&:hover': { bgcolor: (theme) => theme.palette.success.main }
+                    }}
+                  >
+                    Add</Button>
+                  <CloseIcon
+                    fontSize="small"
+                    sx={{
+                      color: (theme) => theme.palette.warning.light,
+                      cursor: 'pointer'
+                    }}
+                    onClick={toggleOpenNewCardForm}
+                  />
+                </Box>
               </Box>
           }
 

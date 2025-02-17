@@ -2,7 +2,7 @@
  * YouTube: TrungQuanDev - Một Lập Trình Viên
  * Created by trungquandev.com's author on Jun 28, 2023
  */
-/* export const mockData = {
+ export const mockData = {
   board: {
     _id: 'board-id-01',
     title: 'A moderate',
@@ -70,28 +70,28 @@
       }
     ]
   }
-} */
-
-export const mockData = {
-  board: {
-    _id: 'board-id-01',
-    title: 'boar test 1',
-    description: 'Pro MERN stack Course',
-    type: 'public', // 'private'
-    columnOrderIds: [], // Thứ tự sắp xếp / vị trí của các Columns trong 1 boards
-    columns: [
-      {
-        _id: 'column-id-01',
-        boardId: 'board-id-01',
-        title: 'To Do Column 01',
-        cardOrderIds: ['card-id-01'],
-        cards: [
-          { _id: 'card-id-01', boardId: 'board-id-01', columnId: 'column-id-01', title: 'Title of card 07', description: null, cover: null, memberIds: [], comments: [], attachments: [] }
-        ]
-      }
-    ]
-  }
 }
+
+// export const mockData = {
+//   board: {
+//     _id: 'board-id-01',
+//     title: 'boar test 1',
+//     description: 'Pro MERN stack Course',
+//     type: 'public', // 'private'
+//     columnOrderIds: [], // Thứ tự sắp xếp / vị trí của các Columns trong 1 boards
+//     columns: [
+//       {
+//         _id: 'column-id-01',
+//         boardId: 'board-id-01',
+//         title: 'To Do Column 01',
+//         cardOrderIds: ['card-id-01'],
+//         cards: [
+//           { _id: 'card-id-01', boardId: 'board-id-01', columnId: 'column-id-01', title: 'Title of card 07', description: null, cover: null, memberIds: [], comments: [], attachments: [] }
+//         ]
+//       }
+//     ]
+//   }
+// }
 
 
 export const mockDataBoard =

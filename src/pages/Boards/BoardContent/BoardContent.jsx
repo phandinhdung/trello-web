@@ -9,8 +9,8 @@ import {
   // PointerSensor,
   useSensor,
   useSensors,
-  MouseSensor,
-  TouchSensor,
+  //MouseSensor,
+  //TouchSensor,
   DragOverlay,
   defaultDropAnimationSideEffects,
   closestCorners,
@@ -19,7 +19,7 @@ import {
   getFirstCollision,
   closestCenter
 } from '@dnd-kit/core'
-
+import { MouseSensor, TouchSensor } from '~/customLibraries/DndKitSensors'
 import { cloneDeep, isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import Column from './ListColumns/Column/Column'
@@ -30,7 +30,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACTIVE_DRAG_ITEM_TYPE'
 }
 
-function BoardContent({ board }) {
+function BoardContent({ board, createNewColumn, createNewCard }) {
   // Để khắc phục lỗi không click được button trong các đối tượng kéo thả. Cách giải quyết là  chỉ xử lí hàm kéo thả khi di chuyển nhiều
   // , còn không di chuyển nhiều thì khỏi xử lí, và lúc đó sẽ click được.
   //const pointerSensor = useSensor(PointerSensor, {activationConstraint: {distance: 10}})
@@ -213,8 +213,6 @@ function BoardContent({ board }) {
       }
     }
 
-
-
     setActiveDragItemId(null)
     setActiveDragItemType(null)
     setActiveDragItemData(null)
@@ -271,7 +269,9 @@ function BoardContent({ board }) {
         height: (theme) => theme.trello.boardContentHeight,
         p: '10px 0'
       }}>
-        <ListColumns columns={orderedColumns} />
+        <ListColumns columns={orderedColumns}
+          createNewColumn={createNewColumn}
+          createNewCard={createNewCard} />
         <DragOverlay dropAnimation={customDropAnimation}>
           {!activeDragItemType && null}
           {(activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={activeDragItemData} />}

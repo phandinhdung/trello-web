@@ -6,20 +6,26 @@ import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortabl
 import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
+import { toast } from 'react-toastify'
 
 
-function ListColumns({ columns }) {
+function ListColumns({ columns, createNewColumn, createNewCard }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
   const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm);
 
   const [newColumnTitle, setNewColumnTitle] = useState('');
-  const addNewColumn = () => {
+  const addNewColumn = async () => {
     if (!newColumnTitle) {
-      console.error('Please enter column title!')
+      toast.error('Please enter column title!')
       return;
     }
-    console.log(newColumnTitle);
 
+    //console.log(newColumnTitle);
+    const newColumnData = {
+      title: newColumnTitle
+    }
+
+    await createNewColumn(newColumnData);
     toggleOpenNewColumnForm();
     setNewColumnTitle('');
   }
@@ -35,7 +41,7 @@ function ListColumns({ columns }) {
         overflowY: 'hidden',
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
-        {columns?.map(column => <Column key={column._id} column={column} />)}
+        {columns?.map(column => <Column createNewCard={createNewCard} key={column._id} column={column} />)}
         {/* tra hàm map để hiểu thêm đoạn code này, hiểu đơn giản là sau khi chạy map, nó sẽ tạo ra mảng các đối tượng Column */}
 
         {/* Box Add new column */}
