@@ -44,7 +44,8 @@ function Column({ column, createNewCard }) {
   const handleClose = () => { setAnchorEl(null) }
   //end code cho drop down menu
 
-  const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id') // mảng đã sắp xếp
+  //const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id') // mảng đã sắp xếp
+  const orderedCards = column.cards;
 
   const [openNewCardForm, setOpenNewCardForm] = useState(false);
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm);

@@ -5,22 +5,33 @@ import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import { mockData, mockDataBoard } from '~/apis/mock-data'
 import { useEffect, useState } from 'react'
-import { fetchBoardDetailsAPI, createNewColumnAPI, createNewCardAPI } from '~/apis'
+import {
+  fetchBoardDetailsAPI, createNewColumnAPI,
+  createNewCardAPI, updateBoardDetailsAPI,
+  updateColumnDetailsAPI, moveCardToDifferentColumnAPI
+} from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { isEmpty } from 'lodash'
+import { mapOrder } from '~/utils/sorts'
+import { Box } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Board() {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
     const boardId = '67b2fb1e62a48e198ccdf262'
+
     fetchBoardDetailsAPI(boardId).then(board => {
+      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id');
       //console.log('chay qua day ');
       // Xử lí kéo thả cho column rỗng
       board.columns.forEach(column => {
         if (isEmpty(column.cards)) {
           column.cards = [generatePlaceholderCard(column)];
           column.cardOrderIds = [generatePlaceholderCard(column)._id];
+        } else {
+          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id');
         }
       })
 
@@ -56,14 +67,74 @@ function Board() {
     });
 
     //console.log('createdCard: ', createdCard)
+
     const newBoard = { ...board };
     const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
     if (columnToUpdate) {
-      columnToUpdate.cards.push(createdCard);
-      columnToUpdate.cardOrderIds.push(createdCard._id);
+      if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard];
+        columnToUpdate.cardOrderIds = [createdCard._id];
+      } else {
+        columnToUpdate.cards.push(createdCard);
+        columnToUpdate.cardOrderIds.push(createdCard._id);
+      }
     }
 
     setBoard(newBoard);
+  }
+
+  const moveColumn = async (dndOrderedColumns) => {
+    const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
+
+    const newBoard = { ...board }
+    newBoard.columns = dndOrderedColumnsIds;
+    newBoard.columnOrderIds = dndOrderedColumnsIds;
+    //setBoard(newBoard);
+
+    await updateBoardDetailsAPI(newBoard._id, { columnOrderIds: dndOrderedColumnsIds });
+  }
+
+  const moveCardInTheSameColumn = (dndOrderedCards, dndOrderedCardsIds, columnId) => {
+    const newBoard = { ...board };
+    const columnToUpdate = newBoard.columns.find(column => column._id === columnId)
+    if (columnToUpdate) {
+      columnToUpdate.cards = dndOrderedCards;
+      columnToUpdate.cardOrderIds = dndOrderedCardsIds;
+    }
+
+    //setBoard(newBoard);
+
+    updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardsIds });
+  }
+
+  const moveCardToDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
+    const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
+
+    const newBoard = { ...board }
+    newBoard.columns = dndOrderedColumnsIds;
+    newBoard.columnOrderIds = dndOrderedColumnsIds;
+    //setBoard(newBoard);
+
+    let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds;
+    if (prevCardOrderIds[0].includes('placeholder-card')) {
+      prevCardOrderIds = [];
+    }
+
+    moveCardToDifferentColumnAPI({
+      currentCardId,
+      prevColumnId,
+      prevCardOrderIds,
+      nextColumnId,
+      nextCardOrderIds: dndOrderedColumns.find(c => c._id === nextColumnId)?.cardOrderIds
+    })
+  }
+
+  if (!board) {
+    return (
+      <Box sx={{ display: 'flex' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
@@ -73,7 +144,12 @@ function Board() {
       <BoardContent board={mockData?.board} /> */}
 
       <BoardBar board={board} />
-      <BoardContent board={board} createNewColumn={createNewColumn} createNewCard={createNewCard} />
+      <BoardContent board={board}
+        createNewColumn={createNewColumn}
+        createNewCard={createNewCard}
+        moveColumn={moveColumn}
+        moveCardInTheSameColumn={moveCardInTheSameColumn}
+        moveCardToDifferentColumn={moveCardToDifferentColumn} />
     </Container>
   )
 }

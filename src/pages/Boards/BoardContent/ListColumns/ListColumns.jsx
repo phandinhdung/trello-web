@@ -41,7 +41,7 @@ function ListColumns({ columns, createNewColumn, createNewCard }) {
         overflowY: 'hidden',
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
-        {columns?.map(column => <Column createNewCard={createNewCard} key={column._id} column={column} />)}
+        {columns?.map(column => <Column key={column._id} createNewCard={createNewCard} column={column} />)}
         {/* tra hàm map để hiểu thêm đoạn code này, hiểu đơn giản là sau khi chạy map, nó sẽ tạo ra mảng các đối tượng Column */}
 
         {/* Box Add new column */}
