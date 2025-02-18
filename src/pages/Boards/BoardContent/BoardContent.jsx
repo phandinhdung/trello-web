@@ -32,7 +32,8 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 function BoardContent({ board, createNewColumn,
   createNewCard, moveColumn,
-  moveCardInTheSameColumn, moveCardToDifferentColumn }) {
+  moveCardInTheSameColumn, moveCardToDifferentColumn,
+  deleteColumnDetails }) {
   // Để khắc phục lỗi không click được button trong các đối tượng kéo thả. Cách giải quyết là  chỉ xử lí hàm kéo thả khi di chuyển nhiều
   // , còn không di chuyển nhiều thì khỏi xử lí, và lúc đó sẽ click được.
   //const pointerSensor = useSensor(PointerSensor, {activationConstraint: {distance: 10}})
@@ -290,7 +291,8 @@ function BoardContent({ board, createNewColumn,
       }}>
         <ListColumns columns={orderedColumns}
           createNewColumn={createNewColumn}
-          createNewCard={createNewCard} />
+          createNewCard={createNewCard} 
+          deleteColumnDetails={deleteColumnDetails} />
         <DragOverlay dropAnimation={customDropAnimation}>
           {!activeDragItemType && null}
           {(activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={activeDragItemData} />}
