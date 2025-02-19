@@ -20,10 +20,27 @@ import { toast } from 'react-toastify'
 
 function Board() {
   const [board, setBoard] = useState(null);
+  const boardId = '67b2fb1e62a48e198ccdf262';
+
+  const loadBoard = () => {
+    fetchBoardDetailsAPI(boardId).then(board => {
+      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id');
+      //console.log('chay qua day ');
+      // Xử lí kéo thả cho column rỗng
+      board.columns.forEach(column => {
+        if (isEmpty(column.cards)) {
+          column.cards = [generatePlaceholderCard(column)];
+          column.cardOrderIds = [generatePlaceholderCard(column)._id];
+        } else {
+          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id');
+        }
+      })
+
+      setBoard(board);
+    })
+  }
 
   useEffect(() => {
-    const boardId = '67b2fb1e62a48e198ccdf262'
-
     fetchBoardDetailsAPI(boardId).then(board => {
       board.columns = mapOrder(board.columns, board.columnOrderIds, '_id');
       //console.log('chay qua day ');
@@ -63,40 +80,50 @@ function Board() {
   }
 
   const createNewCard = async (newCardData) => {
-    const createdCard = await createNewCardAPI({
+    // const createdCard = await createNewCardAPI({
+    //   ...newCardData,
+    //   boardId: board._id
+    // });
+
+    //console.log('createdCard: ', createdCard)
+
+    // const newBoard = { ...board };
+    // const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
+    // if (columnToUpdate) {
+    //   if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
+    //     columnToUpdate.cards = [createdCard];
+    //     columnToUpdate.cardOrderIds = [createdCard._id];
+    //   } else {
+    //     columnToUpdate.cards.push(createdCard);
+    //     columnToUpdate.cardOrderIds.push(createdCard._id);
+    //   }
+    // }
+
+    // setBoard(newBoard);
+
+
+    // CÁCH XỬ LÍ KHÁC KHI TẠO CARD MOWISf
+    await createNewCardAPI({
       ...newCardData,
       boardId: board._id
     });
 
-    //console.log('createdCard: ', createdCard)
-
-    const newBoard = { ...board };
-    const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
-    if (columnToUpdate) {
-      if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
-        columnToUpdate.cards = [createdCard];
-        columnToUpdate.cardOrderIds = [createdCard._id];
-      } else {
-        columnToUpdate.cards.push(createdCard);
-        columnToUpdate.cardOrderIds.push(createdCard._id);
-      }
-    }
-
-    setBoard(newBoard);
+    loadBoard();
   }
 
   const moveColumn = async (dndOrderedColumns) => {
     const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
 
-    const newBoard = { ...board }
-    newBoard.columns = dndOrderedColumnsIds;
-    newBoard.columnOrderIds = dndOrderedColumnsIds;
+    //const newBoard = { ...board }
+    //newBoard.columns = dndOrderedColumnsIds;
+    //newBoard.columnOrderIds = dndOrderedColumnsIds;
     //setBoard(newBoard);
 
-    await updateBoardDetailsAPI(newBoard._id, { columnOrderIds: dndOrderedColumnsIds });
+    await updateBoardDetailsAPI(board._id, { columnOrderIds: dndOrderedColumnsIds });
+    loadBoard();
   }
 
-  const moveCardInTheSameColumn = (dndOrderedCards, dndOrderedCardsIds, columnId) => {
+  const moveCardInTheSameColumn = async (dndOrderedCards, dndOrderedCardsIds, columnId) => {
     const newBoard = { ...board };
     const columnToUpdate = newBoard.columns.find(column => column._id === columnId)
     if (columnToUpdate) {
@@ -104,17 +131,16 @@ function Board() {
       columnToUpdate.cardOrderIds = dndOrderedCardsIds;
     }
 
-    //setBoard(newBoard);
+    setBoard(newBoard);
 
     updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardsIds });
   }
 
-  const moveCardToDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
-    const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
-
-    const newBoard = { ...board }
-    newBoard.columns = dndOrderedColumnsIds;
-    newBoard.columnOrderIds = dndOrderedColumnsIds;
+  const moveCardToDifferentColumn = async (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
+    //const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
+    // const newBoard = { ...board }
+    // newBoard.columns = dndOrderedColumnsIds;
+    // newBoard.columnOrderIds = dndOrderedColumnsIds;
     //setBoard(newBoard);
 
     let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds;
@@ -122,13 +148,15 @@ function Board() {
       prevCardOrderIds = [];
     }
 
-    moveCardToDifferentColumnAPI({
+    await moveCardToDifferentColumnAPI({
       currentCardId,
       prevColumnId,
       prevCardOrderIds,
       nextColumnId,
       nextCardOrderIds: dndOrderedColumns.find(c => c._id === nextColumnId)?.cardOrderIds
     })
+
+    loadBoard();
   }
 
   const deleteColumnDetails = (columnId) => {
