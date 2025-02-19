@@ -64,7 +64,7 @@ function Board() {
       boardId: board._id
     });
 
-    //console.log('createdColumn: ', createdColumn);
+
     createdColumn.cards = [generatePlaceholderCard(createdColumn)];
     createdColumn.cardOrderIds = [generatePlaceholderCard(createdColumn)._id];
 
